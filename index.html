@@ -46,6 +46,30 @@
       box-shadow: 0 0 15px rgba(0,0,0,0.6);
       backdrop-filter: blur(6px);
       padding: 1rem;
+      position: relative;
+    }
+
+    /* Tambahan: Ubah frame scanner jadi persegi */
+    #reader__scan_region div {
+      border: none !important;
+      position: relative;
+    }
+
+    #reader__scan_region::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 4px solid white;
+      box-sizing: border-box;
+      border-radius: 6px;
+      pointer-events: none;
+    }
+
+    #reader__scan_region > div:nth-child(2) {
+      display: none !important;
     }
 
     #switchCamera {
@@ -86,32 +110,24 @@
     &copy; 2024 Pohon Berbisik — Made with ❤️ di alam
   </footer>
 
-  <audio id="beep" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_b00e9736ca.mp3?filename=beep-5-18656.mp3" preload="auto"></audio>
-
   <script>
     const html5QrCode = new Html5Qrcode("reader");
     let currentCameraIndex = 0;
     let cameras = [];
 
     function onScanSuccess(decodedText, decodedResult) {
-      const beep = document.getElementById("beep");
-      if (decodedText.includes("afifsiregar.github.io/pohon-berbisik")) {
-        beep.play();
-        html5QrCode.stop().then(() => {
-          window.location.href = decodedText;
-        }).catch(err => {
-          alert("Gagal berhenti: " + err);
-        });
-      } else {
-        alert("QR tidak dikenali. Pastikan scan QR dari Pohon Berbisik.");
-      }
+      html5QrCode.stop().then(() => {
+        window.location.href = decodedText;
+      }).catch(err => {
+        alert("Gagal berhenti: " + err);
+      });
     }
 
     function startCamera(index) {
       const cameraId = cameras[index].id;
       html5QrCode.start(
         cameraId,
-        { fps: 10, qrbox: { width: 250, height: 250 } },
+        { fps: 10, qrbox: { width: 250, height: 250 } }, // <- persegi
         onScanSuccess
       ).catch(err => {
         document.getElementById("reader").innerText = "Gagal memulai kamera: " + err;
