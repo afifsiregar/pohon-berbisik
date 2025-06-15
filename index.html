@@ -42,10 +42,26 @@
       margin-top: 2rem;
       border-radius: 16px;
       overflow: hidden;
-      background: rgba(0, 0, 0, 0.3); /* transparan, menyatu dengan hutan */
+      background: rgba(0, 0, 0, 0.3);
       box-shadow: 0 0 15px rgba(0,0,0,0.6);
-      backdrop-filter: blur(6px); /* efek kaca buram */
+      backdrop-filter: blur(6px);
       padding: 1rem;
+    }
+
+    #switchCamera {
+      margin-top: 1rem;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    #switchCamera:hover {
+      background: rgba(255, 255, 255, 0.4);
     }
 
     footer {
@@ -64,6 +80,7 @@
   <p>Arahkan kamera ke QR code pada pohon untuk mulai mendengarkan suaranya</p>
 
   <div id="reader"></div>
+  <button id="switchCamera">🔄 Switch Camera</button>
 
   <footer>
     &copy; 2024 Pohon Berbisik — Made with ❤️ di alam
@@ -71,6 +88,8 @@
 
   <script>
     const html5QrCode = new Html5Qrcode("reader");
+    let currentCameraIndex = 0;
+    let cameras = [];
 
     function onScanSuccess(decodedText, decodedResult) {
       html5QrCode.stop().then(() => {
@@ -80,20 +99,41 @@
       });
     }
 
+    function startCamera(index) {
+      const cameraId = cameras[index].id;
+      html5QrCode.start(
+        cameraId,
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        onScanSuccess
+      ).catch(err => {
+        document.getElementById("reader").innerText = "Gagal memulai kamera: " + err;
+      });
+    }
+
     Html5Qrcode.getCameras().then(devices => {
       if (devices && devices.length) {
-        let cameraId = devices[0].id;
-        html5QrCode.start(
-          cameraId,
-          {
-            fps: 10,
-            qrbox: { width: 250, height: 250 }
-          },
-          onScanSuccess
-        );
+        cameras = devices;
+        startCamera(currentCameraIndex);
+        // Sembunyikan tombol jika cuma 1 kamera
+        if (cameras.length < 2) {
+          document.getElementById("switchCamera").style.display = "none";
+        }
+      } else {
+        document.getElementById("reader").innerText = "Tidak ada kamera ditemukan.";
       }
     }).catch(err => {
       document.getElementById("reader").innerText = "Kamera tidak tersedia: " + err;
+    });
+
+    document.getElementById("switchCamera").addEventListener("click", () => {
+      if (cameras.length > 1) {
+        html5QrCode.stop().then(() => {
+          currentCameraIndex = (currentCameraIndex + 1) % cameras.length;
+          startCamera(currentCameraIndex);
+        }).catch(err => {
+          alert("Gagal mengganti kamera: " + err);
+        });
+      }
     });
   </script>
 </body>
