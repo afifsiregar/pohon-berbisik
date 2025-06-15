@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pohon Berbisik - Scan QR</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      background: url('https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 2rem;
+      font-size: 2rem;
+      background: rgba(0, 100, 0, 0.6);
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+    }
+
+    p {
+      background: rgba(0, 100, 0, 0.5);
+      padding: 0.3rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    #reader {
+      width: 320px;
+      height: 320px;
+      margin-top: 2rem;
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.3); /* transparan, menyatu dengan hutan */
+      box-shadow: 0 0 15px rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px); /* efek kaca buram */
+      padding: 1rem;
+    }
+
+    footer {
+      margin-top: auto;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      color: #ddd;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🌲 Pohon Berbisik</h1>
+  <p>Arahkan kamera ke QR code pada pohon untuk mulai mendengarkan suaranya</p>
+
+  <div id="reader"></div>
+
+  <footer>
+    &copy; 2024 Pohon Berbisik — Made with ❤️ di alam
+  </footer>
+
+  <script>
+    const html5QrCode = new Html5Qrcode("reader");
+
+    function onScanSuccess(decodedText, decodedResult) {
+      html5QrCode.stop().then(() => {
+        window.location.href = decodedText;
+      }).catch(err => {
+        alert("Gagal berhenti: " + err);
+      });
+    }
+
+    Html5Qrcode.getCameras().then(devices => {
+      if (devices && devices.length) {
+        let cameraId = devices[0].id;
+        html5QrCode.start(
+          cameraId,
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 250 }
+          },
+          onScanSuccess
+        );
+      }
+    }).catch(err => {
+      document.getElementById("reader").innerText = "Kamera tidak tersedia: " + err;
+    });
+  </script>
+</body>
+</html>
