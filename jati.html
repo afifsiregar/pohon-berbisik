@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pohon Jati - Pohon Berbisik</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url('https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+
+    button {
+      margin: 1rem;
+      padding: 0.7rem 1.5rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: lightgreen;
+      font-weight: bold;
+    }
+
+    #note {
+      display: none;
+      margin-top: 1rem;
+      color: lightcoral;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🌳 Pohon Jati</h1>
+  <p>Pilih bahasa untuk mendengarkan tentang pohon jati:</p>
+
+  <div>
+    <button onclick="playAudio('id')">Bahasa Indonesia</button>
+    <button onclick="playAudio('en')">English</button>
+  </div>
+
+  <!-- Audio element tanpa controls -->
+  <audio id="audio-player"></audio>
+
+  <p id="note">Jika audio tidak otomatis diputar, aktifkan suara dan klik lagi.</p>
+
+  <script>
+    function playAudio(lang) {
+      const audioPlayer = document.getElementById('audio-player');
+      const note = document.getElementById('note');
+
+      const audioSrc = lang === 'id' ? 'jati_id.mp3' : 'jati_en.mp3';
+
+      // Ganti source
+      audioPlayer.innerHTML = '';
+      const source = document.createElement('source');
+      source.src = audioSrc;
+      source.type = 'audio/mpeg';
+      audioPlayer.appendChild(source);
+      audioPlayer.load();
+
+      // Coba putar
+      audioPlayer.play().catch(() => {
+        // Jika gagal, tampilkan catatan
+        note.style.display = 'block';
+      });
+    }
+  </script>
+
+</body>
+</html>
